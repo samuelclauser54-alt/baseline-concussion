@@ -1,0 +1,137 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+}
+
+:root {
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --surface-2: #eef1f8;
+  --ink: #0b1220;
+  --muted: #55607a;
+  --faint: #8a93a8;
+  --line: #e0e5ef;
+  --accent: #2f5bea;
+  --accent-soft: #e6ecff;
+  --on-accent: #ffffff;
+  --danger: #dc2626;
+  --danger-soft: #fde8e8;
+  --warn: #c2700a;
+  --warn-soft: #fff1dc;
+  --ok: #0f8a5f;
+  --ok-soft: #e0f5ec;
+  color-scheme: light;
+}
+
+/* Friday-night games: follow the phone's dark mode. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #070b14;
+    --surface: #0f1626;
+    --surface-2: #172036;
+    --ink: #eef2fb;
+    --muted: #a3adc4;
+    --faint: #6f7a93;
+    --line: #222c44;
+    --accent: #6d8cff;
+    --accent-soft: #1a2550;
+    --on-accent: #050a18;
+    --danger: #ff5a5a;
+    --danger-soft: #3a1416;
+    --warn: #ffb547;
+    --warn-soft: #3a2810;
+    --ok: #3ddc97;
+    --ok-soft: #0f3326;
+    color-scheme: dark;
+  }
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100dvh;
+  overscroll-behavior-y: none;
+}
+
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 55%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 18px transparent;
+  }
+}
+.pulse-ring {
+  animation: pulse-ring 1.6s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .pulse-ring {
+    animation: none;
+  }
+}
+
+@media print {
+  :root {
+    --bg: #fff;
+    --surface: #fff;
+    --surface-2: #f3f4f6;
+    --ink: #000;
+    --muted: #333;
+    --line: #ccc;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-plain {
+    box-shadow: none !important;
+  }
+}
