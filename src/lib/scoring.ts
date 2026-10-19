@@ -19,6 +19,8 @@ export interface Finding {
   summary: string
   baseline?: string
   current?: string
+  /** Caveat shown under the result, e.g. a device change since baseline. */
+  note?: string
 }
 
 export interface Report {
@@ -108,7 +110,15 @@ export function vestibularProvocation(v?: VestibularResult) {
 
 // ---------- comparison ----------
 
-export function buildReport(current: SessionResults, baseline?: SessionResults): Report {
+export interface ReportOptions {
+  /** Baseline and check were recorded on different devices. */
+  differentDevice?: boolean
+}
+
+const DEVICE_NOTE =
+  'Baseline was recorded on a different device. Touchscreens and motion sensors vary between phones, so read this result with caution.'
+
+export function buildReport(current: SessionResults, baseline?: SessionResults, opts: ReportOptions = {}): Report {
   const findings: Finding[] = []
   const hasBaseline = !!baseline
 
@@ -217,6 +227,7 @@ export function buildReport(current: SessionResults, baseline?: SessionResults):
               : 'As fast as baseline or faster',
         baseline: `${brt.median} ms`,
         current: `${rt.median} ms`,
+        note: opts.differentDevice ? DEVICE_NOTE : undefined,
       })
     } else {
       findings.push({
@@ -253,6 +264,7 @@ export function buildReport(current: SessionResults, baseline?: SessionResults):
               : `${ratio.toFixed(2)}× baseline sway, within normal variation`,
         baseline: `${bb.composite} mg · ${bb.errors} err`,
         current: `${bal.composite} mg · ${bal.errors} err`,
+        note: opts.differentDevice ? DEVICE_NOTE : undefined,
       })
     } else {
       findings.push({

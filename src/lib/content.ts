@@ -2,7 +2,7 @@
 // (Concussion Recognition Tool, SCAT symptom scale, Standardized Assessment of
 // Concussion, mBESS, VOMS). Word lists and digit strings are original to this app.
 
-import type { StepId } from './types'
+import type { Session, StepId } from './types'
 
 /** Danger signs: any one means call 911 (Concussion Recognition Tool "red flags"). */
 export const RED_FLAGS = [
@@ -136,6 +136,12 @@ export const BASELINE_STEPS: StepId[] = [
   'symptoms', 'orientation', 'memory', 'concentration', 'reaction', 'balance', 'vestibular', 'delayed',
 ]
 export const CHECK_STEPS: StepId[] = ['redflags', ...BASELINE_STEPS]
+/** Symptom re-check: concussion symptoms can appear minutes to hours after the hit. */
+export const QUICK_STEPS: StepId[] = ['redflags', 'symptoms']
+
+export function sessionLabel(s: Pick<Session, 'kind' | 'quick'>) {
+  return s.kind === 'baseline' ? 'Baseline' : s.quick ? 'Symptom re-check' : 'Sideline check'
+}
 
 /** Graduated return-to-sport strategy (Amsterdam 2022 consensus). Each step
  *  takes at least 24 hours; step 4+ only after symptoms have resolved and a

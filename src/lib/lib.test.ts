@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { analyzeStance, type MotionSample } from './balance'
 import { buildReport, baselineWarnings, cognitiveScore } from './scoring'
 import { mannWhitneyGreater, median, normalCdf } from './stats'
+import { differentDevice } from './device'
+import { parentMessage } from './parent'
 import type { SessionResults, StanceResult } from './types'
 
 // Deterministic pseudo-random numbers so tests are repeatable.
@@ -174,5 +176,42 @@ describe('scoring', () => {
     })
     expect(baselineWarnings(lazy).length).toBeGreaterThanOrEqual(2)
     expect(baselineWarnings(healthy(1))).toEqual([])
+  })
+
+  it('adds a caution when baseline and check used different devices, without changing the verdict', () => {
+    const same = buildReport(healthy(2), healthy(1))
+    const diff = buildReport(healthy(2), healthy(1), { differentDevice: true })
+    expect(diff.verdict).toBe(same.verdict)
+    expect(diff.findings.find((f) => f.domain === 'reaction')!.note).toMatch(/different device/)
+    expect(same.findings.find((f) => f.domain === 'reaction')!.note).toBeUndefined()
+    expect(differentDevice('iPhone · 390×844', 'iPhone · 390×844')).toBe(false)
+    expect(differentDevice('iPhone · 390×844', 'Pixel 8 · 412×915')).toBe(true)
+    expect(differentDevice(undefined, 'iPhone · 390×844')).toBe(false)
+  })
+})
+
+describe('parent message', () => {
+  const args = { athlete: 'Jordan', when: Date.UTC(2026, 9, 19, 18), verdict: 'remove' as const, flaggedDomains: ['balance', 'symptoms'] }
+
+  it('cites the Nebraska clearance rule and danger signs when removed', () => {
+    const en = parentMessage('en', args)
+    expect(en).toMatch(/written, signed clearance/)
+    expect(en).toMatch(/• balance/)
+    expect(en).toMatch(/October 19/)
+    expect(en).toMatch(/emergency room/)
+  })
+
+  it('has a Spanish version with the same structure', () => {
+    const es = parentMessage('es', args)
+    expect(es).toMatch(/Ley de Nebraska/)
+    expect(es).toMatch(/• equilibrio/)
+    expect(es).toMatch(/octubre/)
+    expect(es).toMatch(/sala de emergencias/)
+    expect(es.split('•').length).toBe(parentMessage('en', args).split('•').length)
+  })
+
+  it('a no-change message still says a concussion is not ruled out', () => {
+    expect(parentMessage('en', { ...args, verdict: 'no-change' })).toMatch(/does NOT rule out/)
+    expect(parentMessage('en', { ...args, verdict: 'no-change' })).not.toMatch(/Nebraska law/)
   })
 })

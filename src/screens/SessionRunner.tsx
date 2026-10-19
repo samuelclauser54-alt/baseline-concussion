@@ -1,6 +1,6 @@
 import { useEffect, useState, type ComponentType } from 'react'
 import { BottomBar, Button, Card, Icon, StepHeader, formatDate } from '../components/ui'
-import { BASELINE_STEPS, CHECK_STEPS, STEP_LABELS } from '../lib/content'
+import { BASELINE_STEPS, CHECK_STEPS, QUICK_STEPS, STEP_LABELS, sessionLabel } from '../lib/content'
 import { navigate } from '../lib/router'
 import { buildReport } from '../lib/scoring'
 import { baselineFor, saveResult, updateSession, useData } from '../lib/store'
@@ -37,7 +37,7 @@ export function SessionRunner({ id }: { id: string }) {
   const [earlyStopSeen, setEarlyStopSeen] = useState(false)
   if (!session || !athlete) return <NotFound />
 
-  const steps = session.kind === 'baseline' ? BASELINE_STEPS : CHECK_STEPS
+  const steps = session.kind === 'baseline' ? BASELINE_STEPS : session.quick ? QUICK_STEPS : CHECK_STEPS
   const baseline = session.kind === 'check' ? baselineFor(athlete.id, session.startedAt) : undefined
 
   if (session.completedAt) return <Redirect to={`/report/${session.id}`} />
@@ -57,7 +57,7 @@ export function SessionRunner({ id }: { id: string }) {
     const rep = buildReport({ redflags: session.results.redflags, symptoms: session.results.symptoms }, baseline?.results)
     if (rep.verdict === 'remove') {
       return (
-        <Shell athleteName={athlete.name} kind={session.kind} steps={steps} idx={stepIdx}>
+        <Shell athleteName={athlete.name} label={sessionLabel(session)} steps={steps} idx={stepIdx}>
           <StepHeader kicker="Result so far" title={`${athlete.name.split(' ')[0]} should not return to play today`}>
             {rep.findings.filter((f) => f.status === 'flag').map((f) => f.summary).join('. ')}.
           </StepHeader>
@@ -76,7 +76,7 @@ export function SessionRunner({ id }: { id: string }) {
 
   const Step = COMPONENTS[stepId]
   return (
-    <Shell athleteName={athlete.name} kind={session.kind} steps={steps} idx={stepIdx}>
+    <Shell athleteName={athlete.name} label={sessionLabel(session)} steps={steps} idx={stepIdx}>
       <Step
         key={stepId}
         athlete={athlete}
@@ -101,13 +101,13 @@ export function SessionRunner({ id }: { id: string }) {
 
 function Shell({
   athleteName,
-  kind,
+  label,
   steps,
   idx,
   children,
 }: {
   athleteName: string
-  kind: 'baseline' | 'check'
+  label: string
   steps: StepId[]
   idx: number
   children: React.ReactNode
@@ -122,7 +122,7 @@ function Shell({
           <div className="min-w-0 flex-1">
             <div className="truncate text-[15px] font-semibold">{athleteName}</div>
             <div className="text-xs text-muted">
-              {kind === 'check' ? 'Sideline check' : 'Baseline'} · {STEP_LABELS[steps[idx]]} · {formatDate(Date.now(), true)}
+              {label} · {STEP_LABELS[steps[idx]]} · {formatDate(Date.now(), true)}
             </div>
           </div>
           <span className="text-xs font-semibold text-muted tabular">

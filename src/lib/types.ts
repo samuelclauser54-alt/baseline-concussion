@@ -127,6 +127,10 @@ export interface Session {
   context?: string
   /** Set when a check was stopped early because a red flag was found. */
   stoppedForEmergency?: boolean
+  /** Symptom-only re-check (danger signs + symptoms), e.g. 15 minutes after a "no changes" result. */
+  quick?: boolean
+  /** Device the session was recorded on (see lib/device.ts). */
+  device?: string
 }
 
 export interface Data {

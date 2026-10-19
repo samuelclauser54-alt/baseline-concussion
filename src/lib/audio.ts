@@ -5,6 +5,14 @@ let ctx: AudioContext | null = null
 /** Must be called from a tap at least once (iOS only allows audio after a user gesture). */
 export function unlockAudio() {
   try {
+    // iPhone: by default, web sound is muted by the silent switch. "playback"
+    // makes the balance-test beeps audible anyway (Safari 17+; ignored elsewhere).
+    const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession
+    if (session && session.type !== 'playback') session.type = 'playback'
+  } catch {
+    /* not supported */
+  }
+  try {
     ctx ??= new AudioContext()
     if (ctx.state === 'suspended') void ctx.resume()
   } catch {

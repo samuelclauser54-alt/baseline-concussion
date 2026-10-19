@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { BottomBar, Button, Card, Icon, StepHeader } from '../components/ui'
 import { OBSERVED_SIGNS, RED_FLAGS } from '../lib/content'
+import { updateSession } from '../lib/store'
 import type { RedFlagResult } from '../lib/types'
 import type { StepProps } from './shared'
 
-export function RedFlags({ athlete, onDone }: StepProps<RedFlagResult>) {
+export function RedFlags({ athlete, session, onDone }: StepProps<RedFlagResult>) {
   const [flags, setFlags] = useState<Set<string>>(new Set())
+  const [context, setContext] = useState(session.context ?? '')
   const [signs, setSigns] = useState<Set<string>>(new Set())
 
   const toggle = (set: Set<string>, setter: (s: Set<string>) => void, id: string) => {
@@ -16,6 +18,11 @@ export function RedFlags({ athlete, onDone }: StepProps<RedFlagResult>) {
   }
 
   const emergency = flags.size > 0
+  const done = (r: RedFlagResult) => {
+    const c = context.trim()
+    if (c !== (session.context ?? '')) updateSession(session.id, { context: c || undefined })
+    onDone(r)
+  }
 
   return (
     <div>
@@ -39,13 +46,26 @@ export function RedFlags({ athlete, onDone }: StepProps<RedFlagResult>) {
         ))}
       </Card>
 
+      {!session.quick && (
+        <label className="mt-4 block">
+          <span className="mb-1.5 block px-1 text-sm font-semibold">What happened? <span className="font-normal text-muted">(optional, for the doctor)</span></span>
+          <input
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            maxLength={120}
+            placeholder="e.g. helmet-to-helmet hit, 2nd quarter"
+            className="h-12 w-full rounded-xl border border-line bg-surface px-4 text-[16px] outline-none focus:border-accent"
+          />
+        </label>
+      )}
+
       <BottomBar>
         {emergency ? (
-          <Button variant="danger" size="lg" className="flex-1 pulse-ring" onClick={() => onDone({ redFlags: [...flags], observedSigns: [...signs] })}>
+          <Button variant="danger" size="lg" className="flex-1 pulse-ring" onClick={() => done({ redFlags: [...flags], observedSigns: [...signs] })}>
             <Icon name="phone" /> Emergency: what to do
           </Button>
         ) : (
-          <Button size="lg" className="flex-1" onClick={() => onDone({ redFlags: [], observedSigns: [...signs] })}>
+          <Button size="lg" className="flex-1" onClick={() => done({ redFlags: [], observedSigns: [...signs] })}>
             {signs.size ? 'Continue' : 'None of these: continue'}
           </Button>
         )}

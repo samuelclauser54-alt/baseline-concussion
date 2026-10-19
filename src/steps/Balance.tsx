@@ -132,6 +132,9 @@ export function Balance({ athlete, baseline, onDone, onSkip }: StepProps<Balance
           Eyes closed, phone held flat against the chest with both hands. The phone measures sway. Have someone stand close by to catch the athlete.
         </StepHeader>
         <HoldDiagram />
+        <p className="mt-4 flex items-center gap-2 px-1 text-sm text-muted">
+          <Icon name="speaker" size={16} /> Turn the volume up. The phone says when to start and stop.
+        </p>
         <BottomBar>
           <Button variant="ghost" onClick={onSkip}>Skip</Button>
           <Button className="flex-1" size="lg" onClick={enable} disabled={checking}>

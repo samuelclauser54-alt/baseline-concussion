@@ -25,3 +25,5 @@ A reliability study with classmates (two baselines a few days apart) to tune the
 
 ## Anything else?
 Privacy was a priority: no accounts and no server. All athlete data stays on the coach's phone, and research exports are anonymized.
+
+Nebraska law requires coaches to notify a parent when an athlete is removed. Baseline writes that message in English or Spanish, because many families in our district speak Spanish at home. [If a Spanish teacher or native speaker reviewed it, say who here.]

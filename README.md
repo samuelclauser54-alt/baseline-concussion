@@ -42,6 +42,9 @@ The tools trainers use (symptom scales, memory tests, balance scoring, eye-movem
 - **Fast:** stop early once an athlete is clearly out. A 911 button is on every screen.
 - **Voice-guided** balance test (eyes are closed), dark mode for night games, and a printable/shareable report for parents and doctors.
 - **Baseline effort check:** warns if a baseline looks rushed or sandbagged, a known problem with baseline testing.
+- **Tell a parent, in English or Spanish:** Nebraska law requires notifying a parent after a removal. One tap writes a plain-language message with the state's clearance rule, next steps, and the warning signs to watch for overnight.
+- **Symptom re-check:** concussion symptoms can show up late, so a "no changes" result offers a 1-minute symptom re-check 15 minutes later.
+- **Same-device check:** each session records which kind of device it ran on. If the baseline came from a different phone, the reaction-time and balance results carry a caution, because touchscreens and sensors differ between phones.
 
 ## How accurate is it?
 

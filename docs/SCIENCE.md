@@ -56,9 +56,10 @@ The thresholds marked *provisional* in `src/lib/thresholds.ts` should be re-tune
 
 - **Not a diagnosis.** It never clears an athlete. Nebraska law requires written clearance from a licensed health-care provider.
 - **Baselines can be sandbagged.** Athletes sometimes underperform on purpose so a later concussion looks "normal." Baseline warns about suspicious baselines (slow reaction time, many impulse errors, low recall), but can't fully prevent it.
-- **Phone differences.** Sensor rates and touchscreen latency vary between phones. Use the same phone for baseline and checks when possible.
+- **Phone differences.** Sensor rates and touchscreen latency vary between phones. Use the same phone for baseline and checks when possible. Each session records a coarse device label (model type + screen size), and the report adds a caution to reaction time and balance when the baseline came from a different device. The flag itself is kept, because missing a concussion is worse than a false alarm.
 - **Symptoms are self-reported.** Athletes who want to keep playing may under-report. That's why observable signs and objective tests are included.
-- **Symptoms can appear hours later.** A "no changes" result is not the end. Re-check symptoms later and after the game.
+- **Symptoms can appear hours later.** A "no changes" result is not the end. The report offers a 1-minute symptom re-check, and the parent message lists what to watch for overnight.
+- **Spanish parent message.** Written by the developer and should be reviewed by a native speaker (and ideally a Spanish-speaking clinician) before real use.
 - **Ages 9–40.** VOMS norms come from this age range.
 
 ## References

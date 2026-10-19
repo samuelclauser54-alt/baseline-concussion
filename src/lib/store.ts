@@ -1,6 +1,7 @@
 // Tiny on-device store (localStorage) with a React hook.
 
 import { useSyncExternalStore } from 'react'
+import { deviceLabel } from './device'
 import type { Athlete, Data, Session, SessionKind, SessionResults } from './types'
 
 const KEY = 'baseline.data.v1'
@@ -66,8 +67,11 @@ export function deleteAthlete(id: string) {
 
 // ---------- sessions ----------
 
-export function startSession(athleteId: string, kind: SessionKind, context?: string): Session {
-  const s: Session = { id: uid(), athleteId, kind, startedAt: Date.now(), step: 0, skipped: [], results: {}, context }
+export function startSession(athleteId: string, kind: SessionKind, opts: { context?: string; quick?: boolean } = {}): Session {
+  const s: Session = {
+    id: uid(), athleteId, kind, startedAt: Date.now(), step: 0, skipped: [], results: {},
+    context: opts.context, quick: opts.quick || undefined, device: deviceLabel(),
+  }
   commit({ ...data, sessions: [...data.sessions, s] })
   return s
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Sparkline } from '../components/charts'
 import { Button, Card, Icon, Pill, SectionTitle, TopBar, formatDate } from '../components/ui'
+import { sessionLabel } from '../lib/content'
 import { navigate } from '../lib/router'
 import { balanceSummary, baselineWarnings, buildReport, cognitiveScore, reactionSummary } from '../lib/scoring'
 import { baselineFor, deleteAthlete, deleteSession, startSession, useData } from '../lib/store'
@@ -45,7 +46,7 @@ export function AthleteDetail({ id }: { id: string }) {
         <Card className="mt-5 flex items-center gap-3 border-accent p-4">
           <Icon name="clock" className="text-accent" />
           <div className="flex-1 text-sm">
-            <b>Unfinished {unfinished.kind === 'check' ? 'sideline check' : 'baseline'}</b>
+            <b>Unfinished {sessionLabel(unfinished).toLowerCase()}</b>
             <div className="text-muted">Started {formatDate(unfinished.startedAt, true)}</div>
           </div>
           <Button size="sm" onClick={() => navigate(`/session/${unfinished.id}`)}>Resume</Button>
@@ -175,7 +176,7 @@ function HistoryRow({ s, athlete }: { s: Session; athlete: Athlete }) {
   return (
     <button onClick={() => navigate(`/report/${s.id}`)} className="flex w-full items-center gap-3 border-b border-line px-4 py-3.5 text-left last:border-0 hover:bg-surface-2">
       <div className="min-w-0 flex-1">
-        <div className="font-semibold">{s.kind === 'check' ? 'Sideline check' : 'Baseline'}</div>
+        <div className="font-semibold">{sessionLabel(s)}</div>
         <div className="truncate text-sm text-muted">
           {formatDate(s.startedAt, true)}
           {s.context ? ` · ${s.context}` : ''}

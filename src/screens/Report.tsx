@@ -7,7 +7,9 @@ import {
   balanceSummary, baselineWarnings, buildReport, cognitiveScore, reactionSummary, symptomTotals, vestibularProvocation,
   type Finding, type Report as Rep,
 } from '../lib/scoring'
-import { baselineFor, deleteSession, useData } from '../lib/store'
+import { differentDevice } from '../lib/device'
+import { parentMessage, type Lang } from '../lib/parent'
+import { baselineFor, deleteSession, startSession, useData } from '../lib/store'
 import type { Athlete, Session } from '../lib/types'
 import { NotFound } from './AthleteDetail'
 import { Footer } from './Home'
@@ -24,7 +26,7 @@ export function Report({ id }: { id: string }) {
 
 function CheckReport({ s, athlete }: { s: Session; athlete: Athlete }) {
   const base = baselineFor(athlete.id, s.startedAt)
-  const rep = buildReport(s.results, base?.results)
+  const rep = buildReport(s.results, base?.results, { differentDevice: differentDevice(s.device, base?.device) })
   const first = athlete.name.split(' ')[0]
 
   return (
@@ -34,7 +36,7 @@ function CheckReport({ s, athlete }: { s: Session; athlete: Athlete }) {
 
       {rep.verdict === 'emergency' && <EmergencySteps />}
       {rep.verdict === 'remove' && <RemoveSteps first={first} />}
-      {rep.verdict === 'no-change' && <NoChangeSteps first={first} />}
+      {rep.verdict === 'no-change' && <NoChangeSteps first={first} athleteId={athlete.id} context={s.context} />}
 
       {rep.findings.length > 0 && (
         <>
@@ -51,6 +53,8 @@ function CheckReport({ s, athlete }: { s: Session; athlete: Athlete }) {
       )}
 
       <Details s={s} base={base} />
+
+      {rep.verdict !== 'incomplete' && <ParentMessage s={s} athlete={athlete} rep={rep} />}
 
       {(rep.verdict === 'remove' || rep.verdict === 'emergency') && <ReturnSteps />}
 
@@ -147,16 +151,97 @@ function RemoveSteps({ first }: { first: string }) {
   )
 }
 
-function NoChangeSteps({ first }: { first: string }) {
+function NoChangeSteps({ first, athleteId, context }: { first: string; athleteId: string; context?: string }) {
   return (
-    <Steps
-      title="What to do now"
-      items={[
-        <>If you saw anything that worried you, <b>keep {first} out anyway</b>. When in doubt, sit them out.</>,
-        <>Re-check symptoms in 15 minutes and after the game. Concussion symptoms can show up late.</>,
-        <>Tell {first}: report any headache, dizziness, or fogginess right away, today or tomorrow.</>,
-      ]}
-    />
+    <>
+      <Steps
+        title="What to do now"
+        items={[
+          <>If you saw anything that worried you, <b>keep {first} out anyway</b>. When in doubt, sit them out.</>,
+          <>Re-check symptoms in 15 minutes and after the game. Concussion symptoms can show up late.</>,
+          <>Tell {first}: report any headache, dizziness, or fogginess right away, today or tomorrow.</>,
+        ]}
+      />
+      <Button
+        variant="secondary"
+        className="no-print mt-3 w-full"
+        onClick={() => navigate(`/session/${startSession(athleteId, 'check', { quick: true, context: context ? `Re-check after: ${context}` : 'Re-check' }).id}`)}
+      >
+        <Icon name="refresh" size={18} /> Re-check symptoms (1 min)
+      </Button>
+    </>
+  )
+}
+
+function ParentMessage({ s, athlete, rep }: { s: Session; athlete: Athlete; rep: Rep }) {
+  const [lang, setLang] = useState<Lang>(() => {
+    try {
+      return (localStorage.getItem('baseline.parentLang') as Lang) || 'en'
+    } catch {
+      return 'en'
+    }
+  })
+  const [open, setOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const text = parentMessage(lang, {
+    athlete: athlete.name.split(' ')[0],
+    when: s.startedAt,
+    context: s.context,
+    verdict: rep.verdict,
+    flaggedDomains: rep.findings.filter((f) => f.status === 'flag').map((f) => f.domain),
+  })
+  const pick = (l: Lang) => {
+    setLang(l)
+    try {
+      localStorage.setItem('baseline.parentLang', l)
+    } catch {
+      /* ignore */
+    }
+  }
+  const send = async () => {
+    try {
+      if (navigator.share) await navigator.share({ text })
+      else {
+        await navigator.clipboard.writeText(text)
+        setCopied(true)
+      }
+    } catch {
+      /* cancelled */
+    }
+  }
+  return (
+    <div className="no-print">
+      <SectionTitle className="mt-8">Tell a parent</SectionTitle>
+      <Card className="p-4">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm text-muted">
+            {rep.verdict === 'no-change'
+              ? 'A ready-to-send note with what to watch for tonight.'
+              : 'Nebraska law requires notifying a parent. A ready-to-send note with next steps and warning signs.'}
+          </p>
+          <div role="radiogroup" aria-label="Language" className="flex shrink-0 rounded-full bg-surface-2 p-1 text-sm font-semibold">
+            {(['en', 'es'] as const).map((l) => (
+              <button
+                key={l}
+                role="radio"
+                aria-checked={lang === l}
+                onClick={() => pick(l)}
+                className={`h-8 rounded-full px-3 ${lang === l ? 'bg-surface text-ink shadow-sm' : 'text-muted'}`}
+              >
+                {l === 'en' ? 'English' : 'Español'}
+              </button>
+            ))}
+          </div>
+        </div>
+        {open && (
+          <pre className="mt-3 max-h-80 overflow-auto whitespace-pre-wrap rounded-xl bg-surface-2 p-3 font-sans text-[13px] leading-relaxed">{text}</pre>
+        )}
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Button variant="secondary" size="sm" onClick={() => setOpen(!open)}>{open ? 'Hide' : 'Preview'}</Button>
+          <Button size="sm" onClick={send}><Icon name="upload" size={16} /> {copied ? 'Copied' : 'Send'}</Button>
+        </div>
+      </Card>
+    </div>
   )
 }
 
@@ -178,6 +263,7 @@ function FindingRow({ f }: { f: Finding }) {
           {f.status === 'flag' && <Pill tone="danger">Flag</Pill>}
         </div>
         <div className="mt-0.5 text-sm text-muted">{f.summary}</div>
+        {f.note && <div className="mt-1 text-xs font-medium text-warn">{f.note}</div>}
         {(f.baseline || f.current) && (
           <div className="mt-1.5 flex flex-wrap gap-x-4 text-xs text-faint tabular">
             {f.baseline && <span>Baseline: <b className="text-muted">{f.baseline}</b></span>}
