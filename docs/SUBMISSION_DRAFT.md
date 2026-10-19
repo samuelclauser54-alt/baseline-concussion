@@ -20,10 +20,22 @@ Baseline is a free phone app that helps coaches spot concussions on the sideline
 - **Telling real changes from noise:** reaction times vary trial to trial, so I compare the individual trials to baseline with a Mann–Whitney U test instead of just comparing averages.
 - **Being honest about accuracy:** I read the research on each test, put every threshold and its source in one file, and wrote a Python script to measure test-retest reliability and false-alarm rate.
 
-## What would you add next?
+## What did you learn? What was your biggest takeaway?
+[Must be yours. For example, what you learned about concussion research, about signal processing or statistics, or about testing with real people.]
+
+## What would you add next? (2.0 version)
 A reliability study with classmates (two baselines a few days apart) to tune the thresholds. Then, with an athletic trainer, a pilot at Omaha schools that don't have full-time trainers.
 
 ## Anything else?
 Privacy was a priority: no accounts and no server. All athlete data stays on the coach's phone, and research exports are anonymized.
 
 Nebraska law requires coaches to notify a parent when an athlete is removed. Baseline writes that message in English or Spanish, because many families in our district speak Spanish at home. [If a Spanish teacher or native speaker reviewed it, say who here.]
+
+## AI usage disclosure (required by the rules)
+
+The rules say AI tools are allowed only if **all AI usage is fully disclosed**, AI **must not be the entirety of the technical development**, and you must show **significant individual contributions and technical understanding**. Judges may ask to see the source code and have you explain it.
+
+Write this section honestly, in your own words. A structure:
+- **What AI did:** "I used Claude Code (an AI coding assistant) to generate the first version of the app's code and documentation from my design requirements."
+- **What I did myself:** [list real things: features you coded yourself, the reliability study you ran, thresholds you tuned from your own data, bugs you found on real phones and fixed, the design decisions you made]
+- **How I made sure I understand it:** [e.g. walked through every file in `src/lib/`, rewrote X, can explain the balance algorithm and the Mann–Whitney test]

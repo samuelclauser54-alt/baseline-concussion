@@ -2,11 +2,19 @@
 
 Judges mostly watch the video, so it has to show **the problem → a live demo → why it's trustworthy**.
 Film the phone with a second phone, or screen-record it (iPhone: Control Center → Screen Recording, mic on).
-Upload to YouTube as **Public** or **Unlisted** (check the form's rules).
+Upload to YouTube or Vimeo set to **Public** (the rules require public; unlisted is not enough). Length must be **1–3 minutes**.
+
+**Required by the rules. The video must include all of these:**
+- [ ] Your name
+- [ ] The app's name
+- [ ] Its purpose in **one clear sentence**
+- [ ] Who it's for (target audience)
+- [ ] The tools and coding languages used (and, per the AI rule, be upfront that AI tools helped)
+- [ ] The app actually working
 
 ---
 
-**0:00–0:20 · Hook (you on camera, or b-roll of a practice/field)**
+**0:00–0:20 · Hook (you on camera). Start by saying your name and the app name.**
 > "Most high schools in America don't have a full-time athletic trainer, and about half of concussions in high-school football never get reported. So when a player takes a hard hit at practice, a coach has to decide, alone, whether that kid goes back in. I built Baseline to help them make that call."
 
 *(Add your real reason here if you have one: a teammate, a friend, your own sport. One true sentence beats any statistic.)*
@@ -28,10 +36,13 @@ Show a real sideline check, sped up 2× where needed:
 Open the demo athlete Jordan's report. Scroll slowly:
 > "Red means remove from play. It shows exactly what changed: 18% slower reactions, twice the sway, new symptoms. It tells the coach what Nebraska law requires next. And it never says 'cleared.' Only a doctor can do that."
 
-**2:15–2:40 · Why trust it / what's next**
+**2:15–2:30 · How I built it (required: tools & languages)**
+> "It's a web app written in TypeScript with React, plus a Python script for the data analysis. [Say honestly how you used AI tools and what you built or changed yourself.]"
+
+**2:30–2:50 · Why trust it / what's next**
 > "Every test is one trainers already use, and research shows combining them catches far more concussions than any single test. It's free, needs no account, works offline on a field with no signal, and the data never leaves the phone. Next, I'm running a reliability study with classmates to measure false alarms, and I'd love to pilot it with Omaha-area schools that don't have a trainer."
 
-**2:40–2:50 · Close**
+**2:50–3:00 · Close**
 > "Baseline. When in doubt, sit them out."
 Show the app URL.
 
